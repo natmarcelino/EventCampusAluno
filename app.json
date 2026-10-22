@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "EventCampus",
+    "slug": "eventcampus",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#378ADD",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.eventcampus.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Precisamos da sua localização para confirmar presença no evento."
+      }
+    },
+    "android": {
+      "package": "com.eventcampus.app",
+      "permissions": [
+        "CAMERA",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
+    },
+    "plugins": [
+      ["expo-camera", { "cameraPermission": "Permitir acesso à câmera para escanear QR Code." }],
+      ["expo-location", { "locationAlwaysAndWhenInUsePermission": "Permitir acesso à localização para confirmar presença no evento." }]
+    ],
+    "scheme": "eventcampus"
+  }
+}

@@ -18,13 +18,34 @@
       "permissions": [
         "CAMERA",
         "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION"
+        "ACCESS_COARSE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
       ]
     },
     "plugins": [
-      ["expo-camera", { "cameraPermission": "Permitir acesso à câmera para escanear QR Code." }],
-      ["expo-location", { "locationAlwaysAndWhenInUsePermission": "Permitir acesso à localização para confirmar presença no evento." }]
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Permitir acesso à câmera para escanear QR Code."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Permitir acesso à localização para confirmar presença no evento."
+        }
+      ],
+      "expo-font"
     ],
-    "scheme": "eventcampus"
+    "scheme": "eventcampus",
+    "extra": {
+      "eas": {
+        "projectId": "9dbf9522-24da-420e-868b-b1a465b66392"
+      }
+    },
+    "owner": "nathalialimax"
   }
 }

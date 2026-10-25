@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View, Text, FlatList, TextInput, TouchableOpacity,
-  StyleSheet, SafeAreaView, ActivityIndicator, RefreshControl,
+  StyleSheet, SafeAreaView, ActivityIndicator, RefreshControl, Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -13,9 +13,9 @@ import { formatarData, formatarHorario } from '../utils/formatar';
 const TIPO_LABELS = { PALESTRA: 'Palestra', WORKSHOP: 'Workshop', CURSO: 'Curso', SEMINARIO: 'Seminário' };
 
 const STATUS_FILTROS = [
-  { key: 'ATIVO',     label: '✅ Ativos' },
-  { key: 'CONCLUIDO', label: '🏁 Concluídos' },
-  { key: 'ENCERRADO', label: '⏹ Encerrados' },
+  { key: 'ATIVO',     label: 'Ativos' },
+  { key: 'CONCLUIDO', label: 'Concluídos' },
+  { key: 'ENCERRADO', label: 'Encerrados' },
 ];
 
 export default function EventosScreen() {
@@ -52,7 +52,7 @@ export default function EventosScreen() {
       await inscrever(eventoId);
       setEventos(prev => prev.map(e => e.id === eventoId ? { ...e, inscrito: true } : e));
     } catch (e) {
-      alert('❌ ' + (e.message || 'Erro ao se inscrever'));
+      Alert.alert('Não foi possível se inscrever', e.message || 'Tente novamente.');
     }
   }
 
@@ -154,11 +154,13 @@ export default function EventosScreen() {
                   </TouchableOpacity>
                 ) : concluido ? (
                   <View style={[styles.btnStatus, { backgroundColor: colors.primaryLight }]}>
-                    <Text style={[styles.btnStatusText, { color: colors.primaryDark }]}>🏁 Concluído</Text>
+                    <Ionicons name="flag-outline" size={13} color={colors.primaryDark} />
+                    <Text style={[styles.btnStatusText, { color: colors.primaryDark }]}>Concluído</Text>
                   </View>
                 ) : (
                   <View style={[styles.btnStatus, { backgroundColor: colors.redLight }]}>
-                    <Text style={[styles.btnStatusText, { color: colors.red }]}>⏹ Encerrado</Text>
+                    <Ionicons name="close-circle-outline" size={13} color={colors.red} />
+                    <Text style={[styles.btnStatusText, { color: colors.red }]}>Encerrado</Text>
                   </View>
                 )}
               </View>
@@ -219,7 +221,7 @@ const styles = StyleSheet.create({
     paddingVertical: 7, paddingHorizontal: 16,
   },
   btnInscreverText: { color: '#fff', fontSize: 13, fontWeight: '600' },
-  btnStatus: { borderRadius: radius.md, paddingVertical: 7, paddingHorizontal: 16 },
+  btnStatus: { flexDirection: 'row', alignItems: 'center', gap: 5, borderRadius: radius.md, paddingVertical: 7, paddingHorizontal: 16 },
   btnStatusText: { fontSize: 13, fontWeight: '600' },
   empty: { alignItems: 'center', paddingTop: 60 },
 });

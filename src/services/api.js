@@ -18,7 +18,7 @@ async function request(method, rota, body = null) {
   try {
     response = await fetch(API_URL + rota, config);
   } catch (e) {
-    throw new Error(`Sem conexão com o servidor (${API_URL}). Confira o Wi-Fi e o IP em src/services/config.js.`);
+    throw new Error(`Sem conexão com o servidor (${API_URL}). Se a API estiver online, ela pode estar acordando: aguarde uns 40 segundos e tente de novo.`);
   }
 
   // Se a resposta não tem corpo (ex: 204 No Content), retorna null
@@ -38,6 +38,9 @@ async function request(method, rota, body = null) {
 
   return data;
 }
+
+// Acorda a API grátis do Render (chamada ao abrir o app)
+export const acordarApi = () => fetch(API_URL + '/api/status').catch(() => {});
 
 // ── AUTH ──────────────────────────────────────────────────────
 export async function login(email, senha) {

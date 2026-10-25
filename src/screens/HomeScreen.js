@@ -58,7 +58,7 @@ export default function HomeScreen() {
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.greeting}>Olá, {nome.split(' ')[0]}! 👋</Text>
+            <Text style={styles.greeting}>Olá, {nome.split(' ')[0]}!</Text>
             <Text style={[typography.caption]}>Confira seu progresso e próximos eventos.</Text>
           </View>
           <View style={styles.avatar}>
@@ -74,7 +74,10 @@ export default function HomeScreen() {
           <View style={styles.blobBottom} />
           <View style={styles.horasHeader}>
             <Text style={styles.horasTitle}>Horas complementares</Text>
-            <Text style={styles.horasLink}>Ver detalhes →</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
+              <Text style={styles.horasLink}>Ver detalhes</Text>
+              <Ionicons name="chevron-forward" size={14} color={colors.primaryDark} style={{ opacity: 0.8 }} />
+            </View>
           </View>
           <View style={styles.horasContent}>
             <View style={styles.ringWrap}>
@@ -104,7 +107,7 @@ export default function HomeScreen() {
               <View style={styles.track}>
                 <View style={[styles.trackFill, { width: `${pct}%` }]} />
               </View>
-              <Text style={styles.horasFoot}>{horasCompletas >= horasTotal ? 'Meta de horas atingida! 🎉' : `Faltam ${horasTotal - horasCompletas}h para concluir`}</Text>
+              <Text style={styles.horasFoot}>{horasCompletas >= horasTotal ? 'Meta de horas atingida!' : `Faltam ${horasTotal - horasCompletas}h para concluir`}</Text>
             </View>
           </View>
         </TouchableOpacity>

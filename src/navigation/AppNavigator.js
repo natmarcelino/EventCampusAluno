@@ -93,7 +93,7 @@ function TelaWebRedirect() {
   const { usuario, logout } = useAuth();
   return (
     <View style={styles.redirectContainer}>
-      <Text style={styles.redirectIcon}>🖥️</Text>
+      <Ionicons name="desktop-outline" size={56} color={colors.primary} style={{ marginBottom: 16 }} />
       <Text style={styles.redirectTitulo}>Acesso Web</Text>
       <Text style={styles.redirectSub}>
         Olá, {usuario?.nome?.split(' ')[0]}! O perfil de{' '}

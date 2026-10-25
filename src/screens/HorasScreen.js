@@ -3,6 +3,7 @@ import React, { useCallback, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, ScrollView, StyleSheet, SafeAreaView, ActivityIndicator, RefreshControl } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
+import { Ionicons } from '@expo/vector-icons';
 import { getMe, getMinhasInscricoes } from '../services/api';
 import { colors, spacing, typography, radius } from '../styles/theme';
 import { formatarData } from '../utils/formatar';
@@ -89,8 +90,9 @@ export default function HorasScreen() {
             <Text style={{ fontSize: 18, fontWeight: '600', color: colors.textPrimary, marginBottom: 4 }}>{pct}% concluído</Text>
             <Text style={{ fontSize: 13, color: colors.textSecondary }}>{horasCompletas >= horasTotal ? 'Você completou as horas exigidas!' : `Faltam ${horasTotal - horasCompletas}h para concluir`}</Text>
             {pct >= 100 && (
-              <View style={{ backgroundColor: colors.mintLight, borderRadius: radius.md, padding: 8, marginTop: 8 }}>
-                <Text style={{ fontSize: 12, color: colors.mintDark, fontWeight: '500' }}>🎉 Meta atingida!</Text>
+              <View style={{ backgroundColor: colors.mintLight, borderRadius: radius.md, padding: 8, marginTop: 8, flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <Ionicons name="checkmark-circle" size={16} color={colors.mintDark} />
+                <Text style={{ fontSize: 12, color: colors.mintDark, fontWeight: '500' }}>Meta atingida!</Text>
               </View>
             )}
           </View>

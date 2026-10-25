@@ -70,13 +70,13 @@ export default function QRCodeScreen() {
 
       if (resultado?.mensagem) {
         Alert.alert(
-          '✅ Presença confirmada!',
+          'Presença confirmada!',
           resultado.mensagem,
           [{ text: 'OK', onPress: () => navigation.goBack() }]
         );
       } else {
         Alert.alert(
-          '❌ Erro',
+          'Não foi possível confirmar',
           resultado?.erro || 'Erro desconhecido',
           [{ text: 'Tentar novamente', onPress: () => { setScanned(false); setAtivo(true); } }]
         );
@@ -84,7 +84,7 @@ export default function QRCodeScreen() {
     } catch (e) {
       console.log('Erro catch:', e.message);
       Alert.alert(
-        '❌ Erro',
+        'Não foi possível confirmar',
         e.message,
         [{ text: 'Tentar novamente', onPress: () => { setScanned(false); setAtivo(true); } }]
       );
@@ -174,7 +174,8 @@ export default function QRCodeScreen() {
             style={styles.btnPrimary}
             onPress={() => { setScanned(false); setAtivo(true); }}
           >
-            <Text style={styles.btnText}>↻ Escanear novamente</Text>
+            <Ionicons name="refresh" size={18} color="#fff" />
+            <Text style={styles.btnText}>Escanear novamente</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -183,9 +184,12 @@ export default function QRCodeScreen() {
         <View style={styles.eventoInfo}>
           <Ionicons name="calendar-outline" size={16} color={colors.primaryDark} />
           <Text style={styles.eventoInfoText} numberOfLines={1}>{evento.titulo}</Text>
-          {evento.raioKm && (
-            <Text style={{ fontSize: 11, color: colors.primaryDark }}>📍 {evento.raioKm}km</Text>
-          )}
+          {evento.raioMetros ? (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
+              <Ionicons name="location-outline" size={13} color={colors.primaryDark} />
+              <Text style={{ fontSize: 11, color: colors.primaryDark }}>{evento.raioMetros} m</Text>
+            </View>
+          ) : null}
         </View>
       )}
     </SafeAreaView>
@@ -228,6 +232,7 @@ const styles = StyleSheet.create({
   btnPrimary: {
     backgroundColor: colors.primary, borderRadius: radius.md,
     paddingVertical: 12, paddingHorizontal: 24, marginTop: 24,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
   },
   btnText: { color: '#fff', fontSize: 14, fontWeight: '600' },
   eventoInfo: {

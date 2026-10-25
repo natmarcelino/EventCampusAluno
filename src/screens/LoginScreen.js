@@ -5,6 +5,7 @@ import {
   SafeAreaView, KeyboardAvoidingView, Platform,
   ActivityIndicator, ScrollView,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 
 const colors = {
@@ -109,14 +110,15 @@ export default function LoginScreen() {
                   style={styles.senhaToggle}
                   onPress={() => setSenhaVisivel(!senhaVisivel)}
                 >
-                  <Text style={{ fontSize: 16 }}>{senhaVisivel ? '🙈' : '👁️'}</Text>
+                  <Ionicons name={senhaVisivel ? 'eye-off-outline' : 'eye-outline'} size={20} color={colors.textSecondary} />
                 </TouchableOpacity>
               </View>
             </View>
 
             {erro ? (
               <View style={styles.erroBox}>
-                <Text style={styles.erroText}>⚠️ {erro}</Text>
+                <Ionicons name="alert-circle-outline" size={16} color={colors.red} />
+                <Text style={[styles.erroText, { flex: 1 }]}>{erro}</Text>
               </View>
             ) : null}
 
@@ -141,13 +143,13 @@ export default function LoginScreen() {
                 style={[styles.demoBtn, { flex: 0, paddingHorizontal: 32 }]}
                 onPress={() => preencherDemo('aluno')}
               >
-                <Text style={styles.demoBtnIcon}>👨‍🎓</Text>
+                <Ionicons name="school-outline" size={26} color={colors.primary} style={{ marginBottom: 2 }} />
                 <Text style={styles.demoBtnText}>Aluno</Text>
               </TouchableOpacity>
             </View>
           </View>
 
-          <Text style={styles.footer}>© 2024 EventCampus · UNIFAN</Text>
+          <Text style={styles.footer}>© {new Date().getFullYear()} EventCampus · UNIFAN</Text>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -201,7 +203,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     alignItems: 'center', justifyContent: 'center',
   },
-  erroBox: { backgroundColor: colors.redLight, borderRadius: 10, padding: 10, marginBottom: 14 },
+  erroBox: { backgroundColor: colors.redLight, borderRadius: 10, padding: 10, marginBottom: 14, flexDirection: 'row', alignItems: 'center', gap: 8 },
   erroText: { fontSize: 13, color: colors.red, fontWeight: '500' },
   btnPrimary: {
     backgroundColor: colors.primary, borderRadius: 14,

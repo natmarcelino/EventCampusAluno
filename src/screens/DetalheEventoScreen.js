@@ -96,7 +96,7 @@ export default function DetalheEventoScreen() {
       await inscrever(eventoCompleto.id);
       setInscrito(true);
       setEventoCompleto(e => ({ ...e, vagasRestantes: Math.max(0, (e.vagasRestantes ?? 1) - 1) }));
-      Alert.alert('Inscrição confirmada! ✅', `Você está inscrito em:\n${eventoCompleto.titulo}`);
+      Alert.alert('Inscrição confirmada', `Você está inscrito em:\n${eventoCompleto.titulo}`);
     } catch (e) {
       Alert.alert('Erro', e.message || 'Não foi possível se inscrever.');
     } finally {
@@ -167,7 +167,7 @@ export default function DetalheEventoScreen() {
         <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
           <Badge label={tipoLabels[tipo] || tipo} variant={tipoVariant[tipo] || 'blue'} />
           {encerrado && <Badge label={concluido ? 'Concluído' : 'Encerrado'} variant={concluido ? 'blue' : 'red'} />}
-          {eventoCompleto?.qrAtivo && !encerrado && <Badge label="● Presença aberta" variant="green" />}
+          {eventoCompleto?.qrAtivo && !encerrado && <Badge label="Presença aberta" variant="green" />}
         </View>
 
         <Text style={styles.titulo}>{eventoCompleto?.titulo || '—'}</Text>
@@ -226,7 +226,7 @@ export default function DetalheEventoScreen() {
               onPress={() => navigation.navigate('QRCode', { eventoId: eventoCompleto.id })}
             >
               <Ionicons name="qr-code-outline" size={18} color="#fff" />
-              <Text style={styles.btnPrimaryText}>📷 Confirmar presença (QR Code)</Text>
+              <Text style={styles.btnPrimaryText}>Confirmar presença (QR Code)</Text>
             </TouchableOpacity>
             <TouchableOpacity style={{ alignItems: 'center', paddingVertical: 12 }} onPress={handleCancelar}>
               <Text style={{ color: colors.red, fontSize: 13 }}>Cancelar inscrição</Text>

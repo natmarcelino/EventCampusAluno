@@ -11,6 +11,7 @@ export function AuthProvider({ children }) {
 
   // Ao abrir o app: se tem sessão salva e o token ainda vale, entra direto
   useEffect(() => {
+    api.acordarApi();
     async function verificarSessao() {
       try {
         const token = await AsyncStorage.getItem('token');

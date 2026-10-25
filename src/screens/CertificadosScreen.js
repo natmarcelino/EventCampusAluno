@@ -101,7 +101,7 @@ export default function CertificadosScreen() {
       setModalVisible(false);
       setForm({ tituloCurso: '', instituicao: '', cargaHoraria: '' });
       setArquivo(null);
-      Alert.alert('Enviado! 📨', 'Certificado enviado para análise.');
+      Alert.alert('Certificado enviado', 'Agora é só aguardar a análise da coordenação.');
       carregar();
     } catch (e) {
       Alert.alert('Erro', e.message || 'Não foi possível enviar.');
@@ -154,7 +154,7 @@ export default function CertificadosScreen() {
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text style={styles.certTitulo} numberOfLines={1}>{cert.tituloCurso}</Text>
-                    <Text style={styles.certMeta}>{cert.instituicao} · {cert.cargaHoraria}h · {formatarData(cert.enviadoEm)}{cert.temArquivo ? ' · 📎' : ''}</Text>
+                    <Text style={styles.certMeta}>{cert.instituicao} · {cert.cargaHoraria}h · {formatarData(cert.enviadoEm)}{cert.temArquivo ? ' · anexo enviado' : ''}</Text>
                     {cert.motivoReprovacao ? (
                       <Text style={{ fontSize: 11, color: colors.red, marginTop: 2 }}>{cert.motivoReprovacao}</Text>
                     ) : null}
@@ -188,7 +188,7 @@ export default function CertificadosScreen() {
                   <Text style={styles.certTitulo}>{cert.tituloCurso}</Text>
                   <Text style={styles.certMeta}>
                     {cert.ehFinal
-                      ? `🏅 Certificado final · ${cert.cargaHoraria}h · código ${cert.codigoValidacao || ''}`
+                      ? `Certificado final · ${cert.cargaHoraria}h · código ${cert.codigoValidacao || ''}`
                       : `${cert.cargaHoraria}h · Aprovado em ${formatarData(cert.analisadoEm)}`}
                   </Text>
                 </View>

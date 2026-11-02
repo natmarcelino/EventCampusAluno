@@ -29,7 +29,7 @@ function HomeStack() {
       <Stack.Screen name="Dashboard" component={HomeScreen} />
       <Stack.Screen name="DetalheEvento" component={DetalheEventoScreen} />
       <Stack.Screen name="QRCode" component={QRCodeScreen} />
-      <Stack.Screen name="Horas" component={HorasScreen} />
+      <Stack.Screen name="Horas" component={HorasScreen} options={{ headerShown: true, headerTitle: 'Horas Complementares' }} />
     </Stack.Navigator>
   );
 }
@@ -61,7 +61,7 @@ function AlunoTabs() {
       screenOptions={({ route }) => ({
         headerStyle: { backgroundColor: colors.white, elevation: 0, shadowOpacity: 0, borderBottomWidth: 0.5, borderBottomColor: colors.border },
         headerTitleStyle: { fontSize: 17, fontWeight: '600', color: colors.textPrimary },
-        tabBarStyle: { backgroundColor: colors.white, borderTopWidth: 0.5, borderTopColor: colors.border, height: 60, paddingBottom: 8 },
+        tabBarStyle: { backgroundColor: colors.white, borderTopWidth: 0.5, borderTopColor: colors.border },
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textSecondary,
         tabBarLabelStyle: { fontSize: 10, fontWeight: '500' },

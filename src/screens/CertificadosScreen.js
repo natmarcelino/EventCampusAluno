@@ -2,8 +2,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity, StyleSheet,
-  SafeAreaView, Alert, TextInput, Modal, ActivityIndicator, RefreshControl,
+  Alert, TextInput, Modal, ActivityIndicator, RefreshControl,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
 import { getMeusCertificados, enviarCertificado } from '../services/api';
@@ -115,7 +116,7 @@ export default function CertificadosScreen() {
 
   if (carregando) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView edges={['left', 'right']} style={styles.container}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
@@ -124,7 +125,7 @@ export default function CertificadosScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView edges={['left', 'right']} style={styles.container}>
       <View style={styles.tabsBar}>
         {TABS.map((tab, i) => (
           <TouchableOpacity key={i} style={[styles.tab, tabAtiva === i && styles.tabAtiva]} onPress={() => setTabAtiva(i)}>

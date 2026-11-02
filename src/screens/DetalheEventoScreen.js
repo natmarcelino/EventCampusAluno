@@ -1,9 +1,9 @@
 // src/screens/DetalheEventoScreen.js
 import React, { useState, useCallback } from 'react';
 import {
-  View, Text, ScrollView, StyleSheet, SafeAreaView,
-  Alert, TouchableOpacity, ActivityIndicator,
+  View, Text, ScrollView, StyleSheet, Alert, TouchableOpacity, ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import { inscrever, cancelarInscricao, getEvento, getMinhasInscricoes } from '../services/api';
@@ -110,6 +110,9 @@ export default function DetalheEventoScreen() {
   const encerrado = eventoCompleto?.status === 'ENCERRADO' || concluido;
   const vagasRestantes = eventoCompleto?.vagasRestantes ?? eventoCompleto?.vagas ?? '—';
   const semVagas = vagasRestantes === 0;
+  const d = new Date();
+  const hoje = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const jaPassou = !!eventoCompleto?.data && String(eventoCompleto.data) < hoje;
 
   const detalhes = [
     {
@@ -128,7 +131,7 @@ export default function DetalheEventoScreen() {
 
   if (carregando) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView edges={['top']} style={styles.container}>
         <View style={styles.topbar}>
           <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={22} color={colors.primary} />
@@ -142,7 +145,7 @@ export default function DetalheEventoScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView edges={['top']} style={styles.container}>
       <View style={styles.topbar}>
         <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={22} color={colors.primary} />
@@ -234,12 +237,12 @@ export default function DetalheEventoScreen() {
           </View>
         ) : (
           <TouchableOpacity
-            style={[styles.btnPrimary, (loading || semVagas) && { opacity: 0.6 }]}
+            style={[styles.btnPrimary, (loading || semVagas || jaPassou) && { opacity: 0.6 }]}
             onPress={handleInscrever}
-            disabled={loading || semVagas}
+            disabled={loading || semVagas || jaPassou}
           >
             <Text style={styles.btnPrimaryText}>
-              {semVagas ? 'Vagas esgotadas' : loading ? 'Inscrevendo...' : 'Inscrever-se'}
+              {jaPassou ? 'Evento já realizado' : semVagas ? 'Vagas esgotadas' : loading ? 'Inscrevendo...' : 'Inscrever-se'}
             </Text>
           </TouchableOpacity>
         )}

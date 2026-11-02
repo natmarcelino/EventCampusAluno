@@ -3,8 +3,9 @@ import React, { useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import {
   View, Text, ScrollView, TouchableOpacity, StyleSheet,
-  SafeAreaView, ActivityIndicator, RefreshControl,
+  ActivityIndicator, RefreshControl,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { getMinhasInscricoes } from '../services/api';
@@ -55,7 +56,7 @@ export default function InscricoesScreen() {
 
   if (carregando) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView edges={['top']} style={styles.container}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
@@ -64,7 +65,7 @@ export default function InscricoesScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView edges={['top']} style={styles.container}>
       <View style={styles.tabsBar}>
         {TABS.map((tab, i) => (
           <TouchableOpacity key={i} style={[styles.tab, tabAtiva === i && styles.tabAtiva]} onPress={() => setTabAtiva(i)}>
@@ -142,9 +143,6 @@ export default function InscricoesScreen() {
                   <Text style={styles.cardTitulo} numberOfLines={1}>{i.titulo}</Text>
                   <Text style={[typography.caption, { marginTop: 2 }]}>{i.cargaHoraria}h · Disponível</Text>
                 </View>
-                <TouchableOpacity style={styles.btnDownload}>
-                  <Ionicons name="download-outline" size={18} color={colors.primary} />
-                </TouchableOpacity>
               </View>
             ))
         )}

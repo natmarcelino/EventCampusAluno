@@ -135,7 +135,7 @@ export default function HomeScreen() {
               <View style={{ flex: 1 }}>
                 <Text style={styles.eventoTitulo} numberOfLines={1}>{evento.titulo}</Text>
                 <Text style={[typography.caption, { marginTop: 2 }]}>
-                  {formatarData(evento.data)} · {evento.local || ''}
+                  {formatarData(evento.data)}{evento.local ? ` · ${evento.local}` : ''}
                 </Text>
               </View>
               <View style={styles.badge}>

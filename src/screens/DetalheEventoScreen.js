@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import { inscrever, cancelarInscricao, getEvento, getMinhasInscricoes } from '../services/api';
-import { formatarData, formatarHorario } from '../utils/formatar';
+import { formatarData, formatarHorario, hojeISO, podeConfirmarPresenca } from '../utils/formatar';
 import { colors, spacing, typography, radius } from '../styles/theme';
 
 const tipoVariant = {
@@ -110,9 +110,9 @@ export default function DetalheEventoScreen() {
   const encerrado = eventoCompleto?.status === 'ENCERRADO' || concluido;
   const vagasRestantes = eventoCompleto?.vagasRestantes ?? eventoCompleto?.vagas ?? '—';
   const semVagas = vagasRestantes === 0;
-  const d = new Date();
-  const hoje = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  const jaPassou = !!eventoCompleto?.data && String(eventoCompleto.data) < hoje;
+  const hoje = hojeISO();
+  const jaPassou = !!eventoCompleto?.data && String(eventoCompleto.data).slice(0, 10) < hoje;
+  const presencaLiberada = podeConfirmarPresenca(eventoCompleto?.status, eventoCompleto?.data);
 
   const detalhes = [
     {
@@ -126,7 +126,7 @@ export default function DetalheEventoScreen() {
     { icon: 'location-outline', label: 'Local',         value: eventoCompleto?.local || '—' },
     { icon: 'ribbon-outline',   label: 'Carga horária', value: eventoCompleto?.cargaHoraria ? `${eventoCompleto.cargaHoraria} horas` : '—' },
     { icon: 'people-outline',   label: 'Público-alvo',  value: eventoCompleto?.publicoAlvo || 'Todos os cursos' },
-    { icon: 'ticket-outline',   label: 'Vagas',         value: encerrado ? (concluido ? 'Evento concluído' : 'Evento encerrado') : semVagas ? 'Esgotado' : `${vagasRestantes} vagas restantes`, destaque: !encerrado && !semVagas },
+    { icon: 'ticket-outline',   label: 'Vagas',         value: encerrado ? (concluido ? 'Evento concluído' : 'Evento encerrado') : semVagas ? 'Esgotado' : vagasRestantes === 1 ? '1 vaga restante' : `${vagasRestantes} vagas restantes`, destaque: !encerrado && !semVagas },
   ];
 
   if (carregando) {
@@ -224,13 +224,19 @@ export default function DetalheEventoScreen() {
                 Você já está inscrito neste evento
               </Text>
             </View>
-            <TouchableOpacity
-              style={[styles.btnPrimary, { marginTop: 8 }]}
-              onPress={() => navigation.navigate('QRCode', { eventoId: eventoCompleto.id })}
-            >
-              <Ionicons name="qr-code-outline" size={18} color="#fff" />
-              <Text style={styles.btnPrimaryText}>Confirmar presença (QR Code)</Text>
-            </TouchableOpacity>
+            {presencaLiberada ? (
+              <TouchableOpacity
+                style={[styles.btnPrimary, { marginTop: 8 }]}
+                onPress={() => navigation.navigate('QRCode', { eventoId: eventoCompleto.id })}
+              >
+                <Ionicons name="qr-code-outline" size={18} color="#fff" />
+                <Text style={styles.btnPrimaryText}>Confirmar presença (QR Code)</Text>
+              </TouchableOpacity>
+            ) : (
+              <Text style={{ color: colors.textSecondary, fontSize: 13, textAlign: 'center', marginTop: 10 }}>
+                A confirmação de presença por QR Code abre no dia do evento.
+              </Text>
+            )}
             <TouchableOpacity style={{ alignItems: 'center', paddingVertical: 12 }} onPress={handleCancelar}>
               <Text style={{ color: colors.red, fontSize: 13 }}>Cancelar inscrição</Text>
             </TouchableOpacity>

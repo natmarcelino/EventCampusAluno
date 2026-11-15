@@ -3,14 +3,15 @@ import React, { useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import {
   View, Text, ScrollView, TouchableOpacity, StyleSheet,
-  ActivityIndicator, RefreshControl,
+  ActivityIndicator, RefreshControl, Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { getMinhasInscricoes } from '../services/api';
 import { colors, spacing, typography, radius } from '../styles/theme';
-import { formatarData } from '../utils/formatar';
+import { formatarData, podeConfirmarPresenca } from '../utils/formatar';
+import { baixarCertificadoEvento } from '../services/certificado';
 
 const TABS = ['Inscrições', 'Presenças', 'Certificados'];
 
@@ -20,6 +21,19 @@ export default function InscricoesScreen() {
   const [carregando, setCarregando] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [tabAtiva, setTabAtiva] = useState(0);
+  const [baixando, setBaixando] = useState(null); // eventoId do certificado sendo gerado
+
+  async function handleCertificado(i) {
+    if (baixando) return;
+    setBaixando(i.eventoId);
+    try {
+      await baixarCertificadoEvento(i.eventoId, i.titulo);
+    } catch (e) {
+      Alert.alert('Certificado', e.message || 'Não foi possível gerar o certificado.');
+    } finally {
+      setBaixando(null);
+    }
+  }
 
   async function carregar() {
     try {
@@ -95,7 +109,7 @@ export default function InscricoesScreen() {
                   </View>
                   <Badge label={i.presencaConfirmada ? 'Presente' : 'Inscrito'} variant={i.presencaConfirmada ? 'green' : 'blue'} />
                 </View>
-                {!i.presencaConfirmada && (
+                {!i.presencaConfirmada && podeConfirmarPresenca(i.status, i.data) && (
                   <TouchableOpacity
                     style={styles.btnQR}
                     onPress={() => navigation.navigate('QRCode', { eventoId: i.eventoId })}
@@ -135,15 +149,23 @@ export default function InscricoesScreen() {
           comPresenca.length === 0
             ? <View style={styles.empty}><Ionicons name="ribbon-outline" size={48} color={colors.gray200} /><Text style={[typography.h3, { marginTop: 12 }]}>Sem certificados</Text><Text style={[typography.caption, { textAlign: 'center', marginTop: 4 }]}>Confirme presença nos eventos para obter certificados.</Text></View>
             : comPresenca.map(i => (
-              <View key={i.id} style={styles.certItem}>
+              <TouchableOpacity key={i.id} style={styles.certItem} activeOpacity={0.75}
+                onPress={() => handleCertificado(i)} disabled={!!baixando}
+                accessibilityRole="button" accessibilityLabel={`Baixar certificado de ${i.titulo}`}>
                 <View style={{ width: 40, height: 40, borderRadius: radius.md, backgroundColor: colors.mintLight, alignItems: 'center', justifyContent: 'center' }}>
                   <Ionicons name="ribbon-outline" size={20} color={colors.mintDark} />
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.cardTitulo} numberOfLines={1}>{i.titulo}</Text>
-                  <Text style={[typography.caption, { marginTop: 2 }]}>{i.cargaHoraria}h · Disponível</Text>
+                  <Text style={[typography.caption, { marginTop: 2 }]}>{formatarData(i.data)} · {i.cargaHoraria}h · Presença confirmada</Text>
                 </View>
-              </View>
+                <View style={styles.btnDownload}>
+                  {baixando === i.eventoId
+                    ? <ActivityIndicator size="small" color={colors.primary} />
+                    : <Ionicons name="download-outline" size={18} color={colors.primary} />}
+                  <Text style={styles.btnDownloadText}>PDF</Text>
+                </View>
+              </TouchableOpacity>
             ))
         )}
 
@@ -166,6 +188,8 @@ const styles = StyleSheet.create({
   cardTitulo: { fontSize: 13, fontWeight: '500', color: colors.textPrimary },
   btnQR: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 10, backgroundColor: colors.primaryLight, borderRadius: radius.md, paddingVertical: 8, paddingHorizontal: 12 },
   btnQRText: { fontSize: 12, fontWeight: '500', color: colors.primary },
+  btnDownload: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: colors.primaryLight, borderRadius: radius.md, paddingVertical: 6, paddingHorizontal: 10 },
+  btnDownloadText: { fontSize: 12, fontWeight: '600', color: colors.primary },
   btnDownload: { width: 36, height: 36, borderRadius: radius.md, borderWidth: 0.5, borderColor: colors.border, alignItems: 'center', justifyContent: 'center' },
   empty: { alignItems: 'center', paddingTop: 60 },
 });

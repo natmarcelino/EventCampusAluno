@@ -20,3 +20,22 @@ export function formatarHorario(inicio, fim) {
   const i = formatarHora(inicio), f = formatarHora(fim);
   return i && f ? `${i} às ${f}` : i;
 }
+
+/** Data de hoje (fuso do celular) no formato da API: "2026-11-15". */
+export function hojeISO() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+/** "1 vaga", "12 vagas", "Esgotado". */
+export function textoVagas(n) {
+  const v = Number(n);
+  if (!Number.isFinite(v)) return '';
+  if (v <= 0) return 'Esgotado';
+  return v === 1 ? '1 vaga' : `${v} vagas`;
+}
+
+/** A confirmação de presença só faz sentido no dia de um evento ativo. */
+export function podeConfirmarPresenca(status, data) {
+  return status === 'ATIVO' && !!data && String(data).slice(0, 10) === hojeISO();
+}

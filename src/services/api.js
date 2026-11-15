@@ -50,7 +50,7 @@ export async function login(email, senha) {
   return data;
 }
 
-export const cadastrar = (dados) => request('POST', '/api/auth/cadastro', dados);
+// Não há cadastro pelo app: o EventCampus é interno, e a coordenação cadastra os usuários no painel web.
 
 export async function logout() {
   await AsyncStorage.removeItem('token');

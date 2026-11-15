@@ -45,6 +45,29 @@ export default function CertificadosScreen() {
   const [form, setForm] = useState({ tituloCurso: '', instituicao: '', cargaHoraria: '' });
   const [enviando, setEnviando] = useState(false);
   const [arquivo, setArquivo] = useState(null); // { nome, tipo, uri, tamanho }
+  const [erros, setErros] = useState({});        // { campo: 'mensagem' } — destaca o que falta
+
+  const MAX_CARGA_CERT = 200;
+
+  function validarForm() {
+    const e = {};
+    const titulo = form.tituloCurso.trim();
+    const inst = form.instituicao.trim();
+    const cargaTxt = form.cargaHoraria.trim();
+    if (!titulo) e.tituloCurso = 'Informe o nome do curso.';
+    else if (titulo.length > 150) e.tituloCurso = 'Use no máximo 150 caracteres.';
+    if (!inst) e.instituicao = 'Informe a instituição.';
+    else if (inst.length > 150) e.instituicao = 'Use no máximo 150 caracteres.';
+    if (!cargaTxt) e.cargaHoraria = 'Informe a carga horária.';
+    else if (!/^\d+$/.test(cargaTxt) || Number(cargaTxt) < 1) e.cargaHoraria = 'Use um número inteiro de horas, maior que zero.';
+    else if (Number(cargaTxt) > MAX_CARGA_CERT) e.cargaHoraria = `Máximo de ${MAX_CARGA_CERT}h por certificado.`;
+    return e;
+  }
+
+  function fecharFormulario() {
+    setModalVisible(false);
+    setErros({});
+  }
 
   async function escolherArquivo() {
     try {
@@ -81,25 +104,24 @@ export default function CertificadosScreen() {
   const onRefresh = useCallback(() => { setRefreshing(true); carregar(); }, []);
 
   async function handleEnviar() {
-    if (!form.tituloCurso || !form.instituicao || !form.cargaHoraria) {
-      Alert.alert('Campos obrigatórios', 'Preencha todos os campos.');
+    const e = validarForm();
+    setErros(e);
+    if (Object.keys(e).length > 0) {
+      const faltando = Object.values(e).join('\n');
+      Alert.alert('Confira os campos destacados', faltando);
       return;
     }
     const carga = parseInt(form.cargaHoraria, 10);
-    if (!(carga > 0)) {
-      Alert.alert('Carga horária inválida', 'Informe um número de horas maior que zero.');
-      return;
-    }
     setEnviando(true);
     try {
-      const body = { ...form, cargaHoraria: carga };
+      const body = { tituloCurso: form.tituloCurso.trim(), instituicao: form.instituicao.trim(), cargaHoraria: carga };
       if (arquivo) {
         body.arquivoNome = arquivo.nome;
         body.arquivoTipo = arquivo.tipo;
         body.arquivoBase64 = await lerComoBase64(arquivo.uri);
       }
       await enviarCertificado(body);
-      setModalVisible(false);
+      fecharFormulario();
       setForm({ tituloCurso: '', instituicao: '', cargaHoraria: '' });
       setArquivo(null);
       Alert.alert('Certificado enviado', 'Agora é só aguardar a análise da coordenação.');
@@ -207,26 +229,31 @@ export default function CertificadosScreen() {
           <View style={styles.modalBox}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
               <Text style={{ fontSize: 17, fontWeight: '600', color: colors.textPrimary }}>Novo certificado</Text>
-              <TouchableOpacity onPress={() => setModalVisible(false)}>
+              <TouchableOpacity onPress={fecharFormulario} accessibilityLabel="Fechar formulário">
                 <Ionicons name="close" size={22} color={colors.textSecondary} />
               </TouchableOpacity>
             </View>
 
             {[
-              { label: 'Nome do curso *', key: 'tituloCurso', placeholder: 'Ex: Curso de Python' },
-              { label: 'Instituição *', key: 'instituicao', placeholder: 'Ex: Udemy, Coursera' },
-              { label: 'Carga horária (h) *', key: 'cargaHoraria', placeholder: 'Ex: 20', keyboard: 'numeric' },
+              { label: 'Nome do curso *', key: 'tituloCurso', placeholder: 'Ex: Curso de Python', max: 150 },
+              { label: 'Instituição *', key: 'instituicao', placeholder: 'Ex: Udemy, Coursera', max: 150 },
+              { label: `Carga horária (h) * — máx. ${MAX_CARGA_CERT}h`, key: 'cargaHoraria', placeholder: 'Ex: 20', keyboard: 'number-pad', max: 3 },
             ].map(f => (
               <View key={f.key} style={{ marginBottom: 12 }}>
                 <Text style={styles.inputLabel}>{f.label}</Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, erros[f.key] && styles.inputErro]}
                   placeholder={f.placeholder}
                   placeholderTextColor={colors.textSecondary}
                   keyboardType={f.keyboard || 'default'}
+                  maxLength={f.max}
                   value={form[f.key]}
-                  onChangeText={v => setForm(p => ({ ...p, [f.key]: v }))}
+                  onChangeText={v => {
+                    setForm(p => ({ ...p, [f.key]: v }));
+                    if (erros[f.key]) setErros(p => ({ ...p, [f.key]: undefined }));
+                  }}
                 />
+                {erros[f.key] ? <Text style={styles.textoErro}>{erros[f.key]}</Text> : null}
               </View>
             ))}
 
@@ -282,4 +309,6 @@ const styles = StyleSheet.create({
   modalBox: { backgroundColor: colors.white, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: spacing.lg, paddingBottom: 40 },
   inputLabel: { fontSize: 12, fontWeight: '500', color: colors.textSecondary, marginBottom: 4 },
   input: { borderWidth: 0.5, borderColor: colors.border, borderRadius: radius.md, padding: 10, fontSize: 14, color: colors.textPrimary, backgroundColor: colors.background },
+  inputErro: { borderWidth: 1.5, borderColor: colors.red, backgroundColor: colors.redLight },
+  textoErro: { fontSize: 11, color: colors.red, marginTop: 4 },
 });

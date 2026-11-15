@@ -22,6 +22,14 @@ import { WEB_URL } from '../services/config';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
+// Cabeçalho padrão: o mesmo nas abas e nas telas abertas por botão (ex.: "Ver detalhes" de Horas)
+const headerPadrao = {
+  headerStyle: { backgroundColor: colors.white, elevation: 0, shadowOpacity: 0, borderBottomWidth: 0.5, borderBottomColor: colors.border },
+  headerTitleStyle: { fontSize: 17, fontWeight: '600', color: colors.textPrimary },
+  headerTitleAlign: 'left',
+  headerTintColor: colors.textPrimary,
+};
+
 // ── Stacks ────────────────────────────────────────────────────
 function HomeStack() {
   return (
@@ -29,7 +37,7 @@ function HomeStack() {
       <Stack.Screen name="Dashboard" component={HomeScreen} />
       <Stack.Screen name="DetalheEvento" component={DetalheEventoScreen} />
       <Stack.Screen name="QRCode" component={QRCodeScreen} />
-      <Stack.Screen name="Horas" component={HorasScreen} options={{ headerShown: true, headerTitle: 'Horas Complementares' }} />
+      <Stack.Screen name="Horas" component={HorasScreen} options={{ ...headerPadrao, headerShown: true, headerTitle: 'Horas Complementares', headerBackTitleVisible: false }} />
     </Stack.Navigator>
   );
 }
@@ -59,8 +67,7 @@ function AlunoTabs() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        headerStyle: { backgroundColor: colors.white, elevation: 0, shadowOpacity: 0, borderBottomWidth: 0.5, borderBottomColor: colors.border },
-        headerTitleStyle: { fontSize: 17, fontWeight: '600', color: colors.textPrimary },
+        ...headerPadrao,
         tabBarStyle: { backgroundColor: colors.white, borderTopWidth: 0.5, borderTopColor: colors.border },
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textSecondary,

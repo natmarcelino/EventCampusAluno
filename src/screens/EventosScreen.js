@@ -1,15 +1,15 @@
 // src/screens/EventosScreen.js
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View, Text, FlatList, TextInput, TouchableOpacity,
   StyleSheet, ActivityIndicator, RefreshControl, Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { getEventos, inscrever } from '../services/api';
 import { colors, spacing, typography, radius } from '../styles/theme';
-import { formatarData, formatarHorario } from '../utils/formatar';
+import { formatarData, formatarHorario, hojeISO, textoVagas } from '../utils/formatar';
 
 const TIPO_LABELS = { PALESTRA: 'Palestra', WORKSHOP: 'Workshop', CURSO: 'Curso', SEMINARIO: 'Seminário' };
 
@@ -39,19 +39,25 @@ export default function EventosScreen() {
     }
   }
 
-  useEffect(() => { carregar(); }, []);
+  // Recarrega sempre que a aba aparece (ex.: depois de cancelar uma inscrição no detalhe)
+  useFocusEffect(useCallback(() => { carregar(); }, []));
   const onRefresh = useCallback(() => { setRefreshing(true); carregar(); }, []);
 
   const eventosFiltrados = eventos.filter(e => {
     const matchBusca = e.titulo?.toLowerCase().includes(busca.toLowerCase());
     const matchStatus = e.status === statusFiltro;
-    return matchBusca && matchStatus;
+    // Segurança extra: evento com data passada nunca aparece em Ativos (a API já o conclui sozinha)
+    const passado = e.status === 'ATIVO' && !!e.data && String(e.data).slice(0, 10) < hojeISO();
+    return matchBusca && matchStatus && !passado;
   });
 
   async function handleInscrever(eventoId) {
     try {
       await inscrever(eventoId);
-      setEventos(prev => prev.map(e => e.id === eventoId ? { ...e, inscrito: true } : e));
+      setEventos(prev => prev.map(e => e.id === eventoId
+        ? { ...e, inscrito: true, vagasRestantes: Math.max(0, (e.vagasRestantes ?? e.vagas ?? 1) - 1) }
+        : e));
+      Alert.alert('Inscrição confirmada', 'Você pode acompanhar seus eventos na aba Inscrições.');
     } catch (e) {
       Alert.alert('Não foi possível se inscrever', e.message || 'Tente novamente.');
     }
@@ -108,7 +114,8 @@ export default function EventosScreen() {
         renderItem={({ item: evento }) => {
           const ativo = evento.status === 'ATIVO';
           const concluido = evento.status === 'CONCLUIDO';
-          const encerrado = evento.status === 'ENCERRADO';
+          const vagasRestantes = evento.vagasRestantes ?? evento.vagas;
+          const esgotado = ativo && Number(vagasRestantes) <= 0;
 
           return (
             <TouchableOpacity
@@ -128,7 +135,7 @@ export default function EventosScreen() {
                   <Text style={[styles.tipoText, {
                     color: ativo ? colors.mintDark : concluido ? colors.primaryDark : colors.red
                   }]}>
-                    {ativo ? `${evento.vagasRestantes ?? evento.vagas} vagas` : concluido ? 'Concluído' : 'Encerrado'}
+                    {ativo ? textoVagas(vagasRestantes) : concluido ? 'Concluído' : 'Encerrado'}
                   </Text>
                 </View>
               </View>
@@ -140,16 +147,33 @@ export default function EventosScreen() {
                   {formatarData(evento.data)} · {formatarHorario(evento.horarioInicio, evento.horarioFim)}
                 </Text>
               </View>
-              <View style={styles.metaRow}>
-                <Ionicons name="location-outline" size={13} color={colors.textSecondary} />
-                <Text style={styles.metaText}>{evento.local || ''}</Text>
-              </View>
+              {evento.local ? (
+                <View style={styles.metaRow}>
+                  <Ionicons name="location-outline" size={13} color={colors.textSecondary} />
+                  <Text style={styles.metaText} numberOfLines={1}>{evento.local}</Text>
+                </View>
+              ) : null}
 
               <View style={styles.cardFooter}>
                 <View style={[styles.tipoBadge, { backgroundColor: colors.primaryLight }]}>
                   <Text style={[styles.tipoText, { color: colors.primaryDark }]}>{evento.cargaHoraria}h</Text>
                 </View>
-                {ativo ? (
+                {ativo && evento.presencaConfirmada ? (
+                  <View style={[styles.btnStatus, { backgroundColor: colors.mintLight }]}>
+                    <Ionicons name="checkmark-circle" size={13} color={colors.mintDark} />
+                    <Text style={[styles.btnStatusText, { color: colors.mintDark }]}>Presente</Text>
+                  </View>
+                ) : ativo && evento.inscrito ? (
+                  <View style={[styles.btnStatus, { backgroundColor: colors.primaryLight }]}>
+                    <Ionicons name="checkmark-circle-outline" size={13} color={colors.primaryDark} />
+                    <Text style={[styles.btnStatusText, { color: colors.primaryDark }]}>Inscrito</Text>
+                  </View>
+                ) : esgotado ? (
+                  <View style={[styles.btnStatus, { backgroundColor: colors.redLight }]}>
+                    <Ionicons name="close-circle-outline" size={13} color={colors.red} />
+                    <Text style={[styles.btnStatusText, { color: colors.red }]}>Esgotado</Text>
+                  </View>
+                ) : ativo ? (
                   <TouchableOpacity style={styles.btnInscrever} onPress={() => handleInscrever(evento.id)}>
                     <Text style={styles.btnInscreverText}>Inscrever-se</Text>
                   </TouchableOpacity>

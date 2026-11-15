@@ -2,7 +2,7 @@
   "expo": {
     "name": "EventCampus",
     "slug": "eventcampus",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "backgroundColor": "#378ADD",
@@ -15,7 +15,7 @@
     },
     "android": {
       "package": "com.eventcampus.app",
-      "versionCode": 2,
+      "versionCode": 3,
       "permissions": [
         "CAMERA",
         "ACCESS_FINE_LOCATION",

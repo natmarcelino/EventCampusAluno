@@ -147,7 +147,7 @@ export default function QRCodeScreen() {
 
       <View style={styles.overlay}>
         <Text style={styles.instrucao}>
-          Posicione o QR Code do organizador dentro do quadro
+          Posicione o QR Code do evento dentro do quadro
         </Text>
 
         <View style={styles.frame}>
@@ -167,7 +167,7 @@ export default function QRCodeScreen() {
         )}
 
         <Text style={styles.aviso}>
-          A presença só será confirmada dentro do raio permitido pelo professor.
+          A presença só será confirmada dentro do raio definido pelo organizador do evento.
         </Text>
 
         {scanned && (

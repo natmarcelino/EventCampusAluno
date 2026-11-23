@@ -2,7 +2,7 @@
   "expo": {
     "name": "EventCampus",
     "slug": "eventcampus",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "backgroundColor": "#378ADD",
@@ -15,7 +15,7 @@
     },
     "android": {
       "package": "com.eventcampus.app",
-      "versionCode": 3,
+      "versionCode": 4,
       "permissions": [
         "CAMERA",
         "ACCESS_FINE_LOCATION",
@@ -47,6 +47,6 @@
         "projectId": "9dbf9522-24da-420e-868b-b1a465b66392"
       }
     },
-    "owner": "nathalialimax"
+    "owner": "nathalia­limax"
   }
 }

@@ -70,9 +70,12 @@ export default function QRCodeScreen() {
       console.log('Resultado:', JSON.stringify(resultado));
 
       if (resultado?.mensagem) {
+        const dist = resultado.distanciaMetros != null
+          ? `\nDistância do local do evento: ${Math.round(resultado.distanciaMetros)} m`
+          : '';
         Alert.alert(
           'Presença confirmada!',
-          resultado.mensagem,
+          resultado.mensagem + dist,
           [{ text: 'OK', onPress: () => navigation.goBack() }]
         );
       } else {
@@ -167,7 +170,9 @@ export default function QRCodeScreen() {
         )}
 
         <Text style={styles.aviso}>
-          A presença só será confirmada dentro do raio definido pelo organizador do evento.
+          {evento && (evento.latitude == null || evento.longitude == null)
+            ? 'O organizador não definiu um local para este evento, então a presença vale de qualquer lugar.'
+            : 'Sua localização é lida na hora da leitura do QR. A presença só será confirmada dentro do raio definido pelo organizador do evento.'}
         </Text>
 
         {scanned && (
@@ -185,12 +190,15 @@ export default function QRCodeScreen() {
         <View style={styles.eventoInfo}>
           <Ionicons name="calendar-outline" size={16} color={colors.primaryDark} />
           <Text style={styles.eventoInfoText} numberOfLines={1}>{evento.titulo}</Text>
-          {evento.raioMetros ? (
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
-              <Ionicons name="location-outline" size={13} color={colors.primaryDark} />
-              <Text style={{ fontSize: 11, color: colors.primaryDark }}>{evento.raioMetros} m</Text>
-            </View>
-          ) : null}
+          {/* Mostra o RAIO permitido, não a distância. A distância real é calculada pela API na hora da leitura. */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
+            <Ionicons name="location-outline" size={13} color={colors.primaryDark} />
+            <Text style={{ fontSize: 11, color: colors.primaryDark }}>
+              {evento.latitude != null && evento.longitude != null
+                ? `Raio permitido: ${evento.raioMetros} m`
+                : 'Sem local definido'}
+            </Text>
+          </View>
         </View>
       )}
     </SafeAreaView>
